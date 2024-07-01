@@ -77,12 +77,9 @@
 
   <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '25rem' }"  @hide="saveCancel">
       <template #header>
-          <div class="inline-flex align-items-center justify-content-center gap-2">
-              <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-              <span class="font-bold white-space-nowrap">Amy Elsner</span>
-          </div>
+        <span v-if="form.id" class="inline-flex uppercase items-center justify-left px-1 py-1 mx-1 text-lg font-bold leading-none text-white rounded">Editar Item</span>
+        <span v-else class="inline-flex uppercase items-center justify-left px-1 py-1 mx-1 text-lg font-bold leading-none text-white rounded">Crear Item</span>
       </template>
-      <span class="p-text-secondary block mb-12">Update your information.</span>
 
       <div class="grid xl:grid-cols-1 lg:grid-cols-1 md:grid-cols-1 grid-cols-1 gap-3">
         <div class="mb-4">

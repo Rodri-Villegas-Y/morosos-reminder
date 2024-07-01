@@ -198,7 +198,7 @@ class ReportsController extends Controller
             $item->save();
 
             foreach ($request->users as $user) {
-                ItemUser::create([
+                ItemUser::firstOrCreate([
                     'item_id' => $item->id,
                     'user_id' => $user['id'],
                 ]);
