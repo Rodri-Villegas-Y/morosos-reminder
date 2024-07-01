@@ -197,6 +197,13 @@ class ReportsController extends Controller
             $item->icon        = $request->icon;
             $item->save();
 
+
+            $itemsUsers = DB::table('items_users')
+                            ->where('item_id', $item->id)
+                            ->whereNotIn('user_id', array_column($request->users, 'id'))
+                            ->delete();
+
+            $itemIds = array_column($request->users, 'id');
             foreach ($request->users as $user) {
                 ItemUser::firstOrCreate([
                     'item_id' => $item->id,
