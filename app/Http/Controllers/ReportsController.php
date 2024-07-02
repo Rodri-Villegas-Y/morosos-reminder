@@ -191,7 +191,7 @@ class ReportsController extends Controller
 
             $item->section_id  = $request->section['id'];
             $item->name        = $request->item;
-            $item->amount      = $request->quota ? (int)($request->amount / (int)$quota[1]) : $request->amount;
+            $item->amount      = $request->amount;
             $item->quota       = $request->quota ? (int)$quota[0] : null;
             $item->quota_total = $request->quota ? (int)$quota[1] : null;
             $item->icon        = $request->icon;
