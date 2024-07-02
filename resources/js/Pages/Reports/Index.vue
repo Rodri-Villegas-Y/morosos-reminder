@@ -262,7 +262,9 @@ export default {
         this.$inertia.get(`/reports/${year}/${month}`)
     },
     saveItem() {
-      this.$inertia.post(this.form.id ? '/reports/update' : '/reports/store', this.form)
+      this.$inertia.post(this.form.id ? '/reports/update' : '/reports/store', this.form, {
+          preserveScroll: true
+        })
     },
     saveCancel() {
       this.visible = false
@@ -280,6 +282,8 @@ export default {
             this.$inertia.post('/reports/pay', {
               id: id,
               month: this.form.month
+            }, {
+              preserveScroll: true
             })
           },
           reject: () => {
