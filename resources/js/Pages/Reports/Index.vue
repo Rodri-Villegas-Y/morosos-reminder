@@ -262,7 +262,7 @@ export default {
         this.$inertia.get(`/reports/${year}/${month}`)
     },
     saveItem() {
-      this.$inertia.post(this.form.id ? '/reports/update' : '/reports/store', this.form, {
+      this.$inertia.post(this.form.id ? route('reports.update') : route('reports.store'), this.form, {
           preserveScroll: true
         })
     },
@@ -279,7 +279,7 @@ export default {
           acceptLabel: 'Si',
           rejectLabel: 'No',
           accept: () => {
-            this.$inertia.post('/reports/pay', {
+            this.$inertia.post(route('reports.pay'), {
               id: id,
               month: this.form.month
             }, {
@@ -298,7 +298,7 @@ export default {
           acceptLabel: 'Si, Eliminar',
           rejectLabel: 'No',
           accept: () => {
-            this.$inertia.post('/reports/remove', {
+            this.$inertia.post(route('reports.remove'), {
               id: id,
               month: this.form.month
             }, {
@@ -333,7 +333,7 @@ export default {
           acceptLabel: 'Si, Duplicar',
           rejectLabel: 'No',
           accept: () => {
-            this.$inertia.post('/reports/duplicate', {
+            this.$inertia.post(route('reports.duplicate'), {
               month: this.form.month,
             }, {
               preserveScroll: true,

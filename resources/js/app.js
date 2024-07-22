@@ -2,6 +2,7 @@ import '../css/app.css'
 import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import PrimeVue from 'primevue/config'
+import { ZiggyVue } from '../../vendor/tightenco/ziggy'
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -18,6 +19,7 @@ createInertiaApp({
       .use(PrimeVue)
       .use(ToastService)
       .use(ConfirmationService)
+      .use(ZiggyVue)
       .mount(el)
   },
 })
