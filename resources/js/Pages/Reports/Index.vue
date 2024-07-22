@@ -230,14 +230,14 @@ export default {
   },
   methods: {
     getTotal(index) {
-      return this.items[index].reduce((total, item) => total + item.amount, 0);
+      return this.items[index].reduce((total, item) => total + parseInt(item.amount), 0)
     },
     getTotalSplit(index, user_id) {
       const filteredItems = this.items[index].filter(item => {
         return item.users.some(user => user.id === user_id)
       })
 
-      return filteredItems.reduce((total, item) => total + item.split, 0);  
+      return filteredItems.reduce((total, item) => total + parseInt(item.split), 0)
     },
     priceFormat(amount) {
         let total = amount

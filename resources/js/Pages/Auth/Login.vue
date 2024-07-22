@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     login() {
-      this.form.post(route('login'))
+      this.form.post(route('login.store'))
     },
   },
 }
