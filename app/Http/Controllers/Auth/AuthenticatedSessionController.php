@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Providers\AppServiceProvider;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -33,8 +34,8 @@ class AuthenticatedSessionController extends Controller
          
         $year  = Carbon::now()->format('Y');
         $month = Carbon::now()->format('m');
-
-        return redirect("/reports/$year/$month");
+        
+        return Redirect::route('reports', ['year' => $year, 'month' => $month]);
     }
 
     /**
@@ -48,6 +49,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return Redirect::route('login');
     }
 }
