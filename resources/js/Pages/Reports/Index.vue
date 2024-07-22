@@ -259,7 +259,7 @@ export default {
         let year  = moment(this.form.month).format('YYYY')
         let month = moment(this.form.month).format('MM')
 
-        this.$inertia.get(`/reports/${year}/${month}`)
+        this.$inertia.get(route('reports', { year, month }))
     },
     saveItem() {
       this.$inertia.post(this.form.id ? route('reports.update') : route('reports.store'), this.form, {
