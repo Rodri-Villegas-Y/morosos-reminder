@@ -51,21 +51,24 @@ export default {
           label: 'Reporte',
           icon: 'fa-solid fa-calendar-days',
           command: () => {
-              this.$inertia.get(`/reports/${moment().format('yyyy')}/${moment().format('MM')}`)
+            const year = moment().format('yyyy')
+            const month = moment().format('MM')
+            this.$inertia.get(route('reports', { year, month }))
           }
         },
         {
           label: 'Mi Perfil',
           icon: 'fa-solid fa-user',
           command: () => {
-              this.$inertia.get(`/users/${this.auth.user.id}/edit`)
+            const user = this.auth.user.id
+            this.$inertia.get(route('users.edit', { user }))
           }
         },
         {
           label: 'Salir',
           icon: 'fas fa-sign-out-alt',
           command: () => {
-              this.$inertia.delete('/logout')
+            this.$inertia.delete(route('logout'))
           }
         }
       ]

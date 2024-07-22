@@ -129,7 +129,7 @@ export default {
           rejectLabel: 'No',
           accept: () => {
             this.processing = true
-            this.form.post(`/users/update`, {
+            this.form.post(route('users.update'), {
               onSuccess: () => {
 
               }
