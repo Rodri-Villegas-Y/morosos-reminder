@@ -3,6 +3,7 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import PrimeVue from 'primevue/config'
 import { ZiggyVue } from '../../vendor/tightenco/ziggy'
+import Tooltip from 'primevue/tooltip'
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -20,6 +21,7 @@ createInertiaApp({
       .use(ToastService)
       .use(ConfirmationService)
       .use(ZiggyVue)
+      .directive('tooltip', Tooltip)
       .mount(el)
   },
 })

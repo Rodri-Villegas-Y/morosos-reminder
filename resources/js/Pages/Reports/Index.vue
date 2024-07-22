@@ -52,7 +52,7 @@
                 <Column field="payed" header="Pagado" bodyStyle="text-align: center" :style="{ width: width >= 1024 ? '50px' : null }">
                   <template #body="{data}">
                     <div>
-                      <i v-if="data.payed" class="fas fa-check-circle text-green-400 text-xl"></i>
+                      <i v-if="data.payed" class="fas fa-check-circle text-green-400 text-xl" v-tooltip.top="formatDate(data.payed_date)"></i>
                       <Button v-else class="m-0 p-0" @click="payItem($event, data.item_id, data.item_name)" text ><i class="far fa-check-circle text-gray-400 text-xl opacity-40"></i></Button>
                     </div>
                   </template>
@@ -349,6 +349,9 @@ export default {
     handleResize() {
         this.width = window.innerWidth
     },
+    formatDate(date) {
+      return moment(date, 'YYYY-MM-DD').format('DD MMM YYYY')
+    }
   },
   computed: {
 

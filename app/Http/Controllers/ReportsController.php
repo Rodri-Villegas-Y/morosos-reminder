@@ -35,12 +35,12 @@ class ReportsController extends Controller
         $month = $request->year.'-'.$request->month;
         $userId = Auth::user()->id;
 
+        $userSections = DB::table('users_sections')
+                            ->where('user_id', $userId)
+                            ->pluck('section_id');
+
         $items = DB::table('items as i')
                     ->join('sections as s', 'i.section_id', 's.id')
-                    ->leftJoin('users_sections as us', function ($join) use ($userId) {
-                        $join->on('s.id', '!=', 'us.section_id')
-                             ->where('us.user_id', '=', $userId);
-                    })
                     ->select(
                         'i.id as item_id',
                         'i.name as item_name',
@@ -48,13 +48,19 @@ class ReportsController extends Controller
                         's.name as section_name',
                         'i.icon',
                         DB::raw("CONCAT(i.quota, '/', i.quota_total) as quota"),
-                        'i.payed'
+                        'i.payed',
+                        'i.payed_date',
+                        'i.section_id'
                     )
                     ->where('month', $month)
-                    ->where('us.section_id')
+                    ->where(function ($query) use ($userSections) {
+                        if (count($userSections) > 0) {
+                            $query->whereIn('i.section_id', $userSections);
+                        }
+                    })
                     ->whereNull('i.deleted_at')
                     ->get();
-            
+
         $itemsUsers = DB::table('items_users as iu')
                         ->join('users as u', 'iu.user_id', 'u.id')
                         ->select(
@@ -102,7 +108,7 @@ class ReportsController extends Controller
                             'first_name as name',
                         )
                         ->get();
-
+                            
         return Inertia::render('Reports/Index', compact(
             'items', 
             'usersSections', 
