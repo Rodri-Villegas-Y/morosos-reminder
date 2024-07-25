@@ -43,7 +43,6 @@
                 <Column field="amount" header="Monto" bodyStyle="text-align: right">
                   <template #body="{data}">
                     <div>
-                      {{ priceFormat(data.amount) }}
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="editItem(data.item_id, index)" text ><i class="fa-solid fa-pen text-sm opacity-70"></i></Button>
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="removeItem($event, data.item_id, data.item_name)" text ><i class="fas fa-trash-alt text-red-500 text-sm opacity-70"></i></Button>
                     </div>
