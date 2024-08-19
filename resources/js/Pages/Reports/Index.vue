@@ -43,6 +43,8 @@
                 <Column field="amount" header="Monto" bodyStyle="text-align: right">
                   <template #body="{data}">
                     <div>
+                      <span v-if="data.descount === 1" class="text-red-400"><i class="fa-solid fa-arrow-down"></i> {{ priceFormat(data.amount) }}</span>
+                      <span v-else>{{ priceFormat(data.amount) }}</span>
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="editItem(data.item_id, index)" text ><i class="fa-solid fa-pen text-sm opacity-70"></i></Button>
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="removeItem($event, data.item_id, data.item_name)" text ><i class="fas fa-trash-alt text-red-500 text-sm opacity-70"></i></Button>
                     </div>
@@ -50,23 +52,23 @@
                 </Column>
                 <Column field="payed" header="Pagado" bodyStyle="text-align: center" :style="{ width: width >= 1024 ? '50px' : null }">
                   <template #body="{data}">
-                    <div>
+                    <div v-if="data.descount !== 1">
                       <i v-if="data.payed" class="fas fa-check-circle text-green-400 text-xl" v-tooltip.top="formatDate(data.payed_date)"></i>
                       <Button v-else class="m-0 p-0" @click="payItem($event, data.item_id, data.item_name)" text ><i class="far fa-check-circle text-gray-400 text-xl opacity-40"></i></Button>
                     </div>
                   </template>
                 </Column>
                 <ColumnGroup type="footer">
-                  <Row>
-                    <Column :footer="`Total ${index}:`" footerStyle="text-align:right" />
-                    <Column :footer="priceFormat(getTotal(index))" footerStyle="text-align:right" />
-                  </Row>
                   <div v-if="Object.keys(usersSections[index]).length > 1">
                     <Row v-for="users in usersSections[index]">
                         <Column :footer="`Total ${index} - ${users.name}:`" footerStyle="text-align:right" />
                         <Column :footer="priceFormat(getTotalSplit(index, users.user_id))" footerStyle="text-align:right" />
                     </Row>
                   </div>
+                  <Row>
+                    <Column :footer="Object.keys(usersSections[index]).length > 1 ? `Total Final` : 'Total'" footerStyle="text-align:right" />
+                    <Column :footer="priceFormat(getTotal(index))" footerStyle="text-align:right" />
+                  </Row>
                 </ColumnGroup>
             </DataTable>
           </p>
@@ -229,7 +231,7 @@ export default {
   },
   methods: {
     getTotal(index) {
-      return this.items[index].reduce((total, item) => total + parseInt(item.amount), 0)
+      return this.items[index].reduce((total, item) => total + (item.descount ===1 ? parseInt(item.amount) * -1 : parseInt(item.amount)), 0)
     },
     getTotalSplit(index, user_id) {
       const filteredItems = this.items[index].filter(item => {

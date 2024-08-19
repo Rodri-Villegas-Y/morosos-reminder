@@ -50,7 +50,8 @@ class ReportsController extends Controller
                         DB::raw("CONCAT(i.quota, '/', i.quota_total) as quota"),
                         'i.payed',
                         'i.payed_date',
-                        'i.section_id'
+                        'i.section_id',
+                        'i.descount'
                     )
                     ->where('month', $month)
                     ->where(function ($query) use ($userSections) {
