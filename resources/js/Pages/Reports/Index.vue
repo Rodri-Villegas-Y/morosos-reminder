@@ -148,6 +148,10 @@
           </FloatLabel>
           <small v-if="errors['users']" class="p-error text-xs flex">{{ errors['users'] }}</small>
         </div>
+        <div class="mb-4">
+          <Checkbox v-model="form.descount" :binary="true" />
+          <label class="ml-2">Descuento <span class="opacity-40">(opcional)</span></label>
+        </div>
       </div>
       <template #footer>
           <Button label="Cancelar" text severity="secondary" @click="saveCancel()" />
@@ -180,6 +184,7 @@ import InputNumber from 'primevue/inputnumber'
 import mapValues from 'lodash/mapValues'
 import MultiSelect from 'primevue/multiselect'
 import ConfirmPopup from 'primevue/confirmpopup'
+import Checkbox from 'primevue/checkbox';
 
 moment.locale('es')
 
@@ -200,7 +205,8 @@ export default {
     InputMask,
     InputNumber,
     MultiSelect,
-    ConfirmPopup
+    ConfirmPopup,
+    Checkbox
   },
   layout: Layout,
   props: {
@@ -223,7 +229,8 @@ export default {
           amount: null,
           quota: null,
           users: null,
-          id: null
+          descount: null,
+          id: null,
       },
       visible: false,
       width: null,
@@ -316,12 +323,14 @@ export default {
       const findUsers = this.userSelect.filter(objUser => {
           return findItem.users.some(objUserSelect => objUserSelect.id === objUser.id)
       })
+
       this.form.section = findSection
       this.form.item = findItem.item_name
       this.form.amount = findItem.amount
       this.form.quota = findItem.quota
       this.form.icon = findItem.icon
       this.form.users = findUsers
+      this.form.descount = (findItem.descount === 1) ? true : false
       this.form.id = id
 
       this.visible = true

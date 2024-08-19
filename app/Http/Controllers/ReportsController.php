@@ -145,6 +145,7 @@ class ReportsController extends Controller
                 'quota'       => $request->quota ? (int)$quota[0] : null,
                 'quota_total' => $request->quota ? (int)$quota[1] : null,
                 'icon'        => $request->icon,
+                'descount'    => $request->descount ? 1 : null,
             ]);
 
             foreach ($request->users as $user) {
@@ -202,6 +203,7 @@ class ReportsController extends Controller
             $item->quota       = $request->quota ? (int)$quota[0] : null;
             $item->quota_total = $request->quota ? (int)$quota[1] : null;
             $item->icon        = $request->icon;
+            $item->descount    = $request->descount ? 1 : null;
             $item->save();
 
 
