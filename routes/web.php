@@ -70,6 +70,10 @@ Route::post('reports/duplicate', [ReportsController::class, 'duplicate'])
     ->name('reports.duplicate')
     ->middleware('auth');
 
+Route::post('reports/getChart', [ReportsController::class, 'getChart'])
+    ->name('getChart')
+    ->middleware('auth');
+
 Route::get('/', [ReportsController::class, 'redirect'])
     ->name('redirect');
 

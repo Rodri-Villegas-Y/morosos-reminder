@@ -7,6 +7,7 @@ use Inertia\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\MessageBag;
@@ -109,7 +110,7 @@ class ReportsController extends Controller
                             'first_name as name',
                         )
                         ->get();
-                            
+               
         return Inertia::render('Reports/Index', compact(
             'items', 
             'usersSections', 
@@ -375,4 +376,58 @@ class ReportsController extends Controller
             return back()->withErrors($message); 
         }
     }
+
+    public function getChart(Request $request): JsonResponse
+    {
+        try {
+
+            $to   = Carbon::parse($request->month)->endOfMonth();
+            $from = $to->copy()->subMonths(12)->startOfMonth();
+
+            $months = [];
+            $currentMonth = $from->copy();
+
+            while ($currentMonth->lessThanOrEqualTo($to)) {
+                $months[] = $currentMonth->format('Y-m');
+                $currentMonth->addMonth();
+            }
+
+            $items = Item::join('sections as s', 'items.section_id', 's.id')
+                        ->where('s.name', $request->section)
+                        ->whereBetween('month', [
+                            Carbon::parse($request->month)->subMonths(12)->startOfMonth(),
+                            Carbon::parse($request->month)->endOfMonth(),
+                        ])
+                        ->selectRaw(
+                            'SUM(CASE WHEN descount = 1 THEN -amount ELSE amount END) as total, month'
+                        )
+                        ->groupBy('month')
+                        ->get()->keyBy('month')->toArray();
+
+            $data = [];
+            foreach ($months as $month) {
+                $data[$month] = isset($items[$month]) ? (int)$items[$month]['total'] : 0;
+            }
+
+            $chartData = [
+                'categories' => $months,
+                'series' => [
+                    [
+                        'name' => 'Total',
+                        'data' => array_values($data),
+                    ],
+                ],
+            ];
+
+            return response()->json($chartData);
+
+        } catch (ValidationException $exception) {
+            $message = new MessageBag();
+            $message->add('error_controller', 'Existió un problema.');
+
+            return back()->withErrors($message); 
+        }
+    }
+
+
 }

@@ -7,6 +7,7 @@ import Tooltip from 'primevue/tooltip'
 
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import HighchartsVue from "highcharts-vue";
 
 createInertiaApp({
   resolve: name => {
@@ -21,6 +22,7 @@ createInertiaApp({
       .use(ToastService)
       .use(ConfirmationService)
       .use(ZiggyVue)
+      .use(HighchartsVue)
       .directive('tooltip', Tooltip)
       .mount(el)
   },

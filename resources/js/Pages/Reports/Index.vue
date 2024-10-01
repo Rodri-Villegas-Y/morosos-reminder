@@ -16,9 +16,16 @@
     </div>
 
   <div class="grid xl:grid-cols-2 lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-3">
-    <Card v-for="(section, index) in items" class="my-2">
+    <Card v-for="(section, index) in items" :key="section.id" class="my-2">
       <template #title>
-        <span class="inline-flex uppercase items-center justify-left px-1 py-1 mx-1 text-lg font-bold leading-none text-white rounded" :style="{ backgroundColor: sectionColor[index] }">{{index}}</span>
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="uppercase justify-left px-1 py-1 mx-1 text-lg font-bold leading-none text-white rounded" :style="{ backgroundColor: sectionColor[index] }">{{index}}</span>
+          </div>
+          <div class="uppercase justify-left px-1 mx-1 font-bold leading-none text-white rounded" :style="{ backgroundColor: sectionColor[index] }">
+            <i class="fa-solid fa-chart-column cursor-pointer text-2xl" v-tooltip.top="'Estadística'" @click="getChart(index)"></i>
+          </div>
+        </div>
       </template>
       <template #content>
           <p class="m-0">
@@ -36,14 +43,14 @@
                       <span class="lowercase">{{ data.item_name }}</span>
                       <i v-if="data.icon" class="mx-1 " :class="data.icon"></i>
                       <span v-if="data.quota" class="inline-flex items-center justify-left px-1 py-1 mx-1 text-xs font-bold leading-none text-white bg-green-500 rounded">{{ data.quota }}</span>
-                      <span v-for="user in data.users" class="inline-flex items-center justify-left px-1 py-1 mx-1 text-xs font-bold leading-none text-white bg-indigo-500 rounded">{{ user.name }}</span>
+                      <span v-for="user in data.users" :key="user.id" class="inline-flex items-center justify-left px-1 py-1 mx-1 text-xs font-bold leading-none text-white bg-indigo-500 rounded">{{ user.name }}</span>
                     </div>
                   </template>
                 </Column>
                 <Column field="amount" header="Monto" bodyStyle="text-align: right">
                   <template #body="{data}">
                     <div>
-                      <span v-if="data.descount === 1" class="text-red-400"><i class="fa-solid fa-arrow-down"></i> {{ priceFormat(data.amount) }}</span>
+                      <span v-if="parseInt(data.descount) === 1" class="text-red-400"><i class="fa-solid fa-arrow-down"></i> {{ priceFormat(data.amount) }}</span>
                       <span v-else>{{ priceFormat(data.amount) }}</span>
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="editItem(data.item_id, index)" text ><i class="fa-solid fa-pen text-sm opacity-70"></i></Button>
                       <Button v-if="auth.user.role=='admin'" class="m-0 p-0 ml-2" @click="removeItem($event, data.item_id, data.item_name)" text ><i class="fas fa-trash-alt text-red-500 text-sm opacity-70"></i></Button>
@@ -52,7 +59,7 @@
                 </Column>
                 <Column field="payed" header="Pagado" bodyStyle="text-align: center" :style="{ width: width >= 1024 ? '50px' : null }">
                   <template #body="{data}">
-                    <div v-if="data.descount !== 1">
+                    <div v-if="parseInt(data.descount) !== 1">
                       <i v-if="data.payed" class="fas fa-check-circle text-green-400 text-xl" v-tooltip.top="formatDate(data.payed_date)"></i>
                       <Button v-else class="m-0 p-0" @click="payItem($event, data.item_id, data.item_name)" text ><i class="far fa-check-circle text-gray-400 text-xl opacity-40"></i></Button>
                     </div>
@@ -60,13 +67,13 @@
                 </Column>
                 <ColumnGroup type="footer">
                   <div v-if="Object.keys(usersSections[index]).length > 1">
-                    <Row v-for="users in usersSections[index]">
+                    <Row v-for="users in usersSections[index]" :key="users.id">
                         <Column :footer="`Total ${index} - ${users.name}:`" footerStyle="text-align:right" />
                         <Column :footer="priceFormat(getTotalSplit(index, users.user_id))" footerStyle="text-align:right" />
                     </Row>
                   </div>
                   <Row>
-                    <Column :footer="Object.keys(usersSections[index]).length > 1 ? `Total Final` : 'Total'" footerStyle="text-align:right" />
+                    <Column :footer="getFooterText(index)" footerStyle="text-align:right" />
                     <Column :footer="priceFormat(getTotal(index))" footerStyle="text-align:right" />
                   </Row>
                 </ColumnGroup>
@@ -91,7 +98,7 @@
               :options="sectionsSelect" 
               optionLabel="name" 
               class="w-full"
-              :class="{'p-invalid': !form.section || errors['section']}" 
+              :class="getInvalidClass('section')" 
             />
             <label for="form-section">Sección <span class="text-red-500 opacity-40">(requerido)</span></label>
           </FloatLabel>
@@ -103,7 +110,7 @@
               id="form-item" 
               v-model="form.item" 
               class="w-full"
-              :class="{'p-invalid': !form.item || errors['item']}"
+              :class="getInvalidClass('item')"
             />
             <label for="form-item">Item <span class="text-red-500 opacity-40">(requerido)</span></label>
           </FloatLabel>
@@ -115,7 +122,7 @@
               id="form-amount" 
               v-model="form.amount" 
               class="w-full" 
-              :class="{'p-invalid': !form.amount || errors['amount']}"
+              :class="getInvalidClass('amount')"
             />
             <label for="form-amount">Monto <span class="text-red-500 opacity-40">(requerido)</span></label>
           </FloatLabel>
@@ -142,7 +149,7 @@
                 optionLabel="name" 
                 :maxSelectedLabels="3" 
                 class="w-full"
-                :class="{'p-invalid': !form.users || errors['users']}"
+                :class="getInvalidClass('users')"
               />
               <label for="form-users">Asignado <span class="text-red-500 opacity-40">(requerido)</span></label>
           </FloatLabel>
@@ -156,6 +163,16 @@
       <template #footer>
           <Button label="Cancelar" text severity="secondary" @click="saveCancel()" />
           <Button label="Guardar" outlined severity="secondary" @click="saveItem()" autofocus />
+      </template>
+  </Dialog>
+
+  <Dialog v-model:visible="chartShow" modal :header="ModalChartHeader" :style="{ width: '95rem' }">
+      <template #header>
+      </template>
+
+      <highcharts class="m-0 p-0" :options="chartOptions" ref="chartOptions" :updateArgs="[true, true, true]" />
+      
+      <template #footer>
       </template>
   </Dialog>
 
@@ -184,9 +201,24 @@ import InputNumber from 'primevue/inputnumber'
 import mapValues from 'lodash/mapValues'
 import MultiSelect from 'primevue/multiselect'
 import ConfirmPopup from 'primevue/confirmpopup'
-import Checkbox from 'primevue/checkbox';
+import Checkbox from 'primevue/checkbox'
+import axios from 'axios'
+import Highcharts from 'highcharts'
+import HighchartsTheme from 'highcharts/themes/dark-unica'
 
 moment.locale('es')
+HighchartsTheme(Highcharts)
+
+Highcharts.setOptions({
+    lang: {
+      months: [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre' ],
+      shortMonths: [ 'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic' ],
+      weekdays: [ 'Domingo' , 'Lunes' , 'Martes' , 'Miércoles' , 'Jueves' , 'Viernes' , 'Sábado' ],
+      shortWeekdays: ['Dom' , 'Lun' , 'Mar' , 'Mi\u00E9' , 'Jue' , 'Vie' , 'Sab' ],
+      numericSymbols: null,
+      thousandsSep: '.'
+    }
+  })
 
 export default {
   components: {
@@ -233,12 +265,101 @@ export default {
           id: null,
       },
       visible: false,
+      chartShow: false,
       width: null,
+      ModalChartHeader: null,
+      chartOptions: {
+        chart: {
+            type: 'column',
+            backgroundColor: null,
+            style: {
+                fontFamily: 'Roboto'
+            },
+            zoomType: 'x',
+        },
+        title: {
+            text: ''
+        },
+        subtitle: {
+            text: 'Últimos 12 meses'
+        },
+        xAxis: {
+          categories: []
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: ''
+            },
+            labels: {
+                formatter: function() {
+                    return '$' + this.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+                }
+            },
+        },
+        tooltip: {
+            shared: true,
+            useHTML: true,
+            backgroundColor: '#3B3D42',
+            style: {
+                opacity: 0.9
+            },
+            formatter: function () {
+                let header = (this.points.length > 1) ? 
+                              '<p style="text-align: center; color:white; font-size:14px;"><b>Dia '+this.x+'</b></h5><table>' :
+                              '<p style="text-align: center; color:white; font-size:14px;"><b>'+moment(this.x).format('DD MMM YYYY')+'</b></h5><table>'
+                let body   = ''
+                let footer = '</table>'
+
+                this.points.forEach(element => {
+                    body += '<tr>' +
+                            '<td style="text-align: left; color:#e5e5e5; font-size:12px;"><span style="color: '+element.series.color+'">█</span></td>' +
+                            '<td style="text-align: left;color:#e5e5e5; font-size:12px;">'+element.series.name+': </td>' +
+                            '<td style="text-align: right;color:#e5e5e5; font-size:12px;"><b>$'+Highcharts.numberFormat(element.y, 0)+'</b></td>' +
+                            '</tr>'
+                });
+
+                return header + body + footer
+            },
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: false
+                },
+                stacking: 'normal',
+            },
+            spline: {
+                lineWidth: 3,
+            },
+            series: {
+                marker: {
+                    enabled: false,
+                    radius: 5
+                },
+            }
+        },
+        series: [],
+        legend: {
+          enabled: false
+        },
+        navigation: {
+            buttonOptions: {
+                enabled: false
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        }
+      }
     }
   },
   methods: {
     getTotal(index) {
-      return this.items[index].reduce((total, item) => total + (item.descount ===1 ? parseInt(item.amount) * -1 : parseInt(item.amount)), 0)
+      return this.items[index].reduce((total, item) => total + (parseInt(item.descount) === 1 ? parseInt(item.amount) * -1 : parseInt(item.amount)), 0)
     },
     getTotalSplit(index, user_id) {
       const filteredItems = this.items[index].filter(item => {
@@ -361,10 +482,56 @@ export default {
     },
     formatDate(date) {
       return moment(date, 'YYYY-MM-DD').format('DD MMM YYYY')
-    }
+    },
+    getFooterText(index) {
+      return Object.keys(this.usersSections[index]).length > 1 
+          ? 'Total Final' 
+          : 'Total';
+    },
+    getChart(index) {
+      axios.post(this.route('getChart'), {
+          section: index,
+          month: this.month
+      })
+      .then((res) => {
+        console.log(res.data)
+        this.chartOptions.xAxis.categories = res.data.categories.map(month => 
+                                                moment(month).format('MMM YY')
+                                              )
+
+        res.data.series[0].color = '#a78bfa'
+        res.data.series[0].dataLabels = {
+            enabled: true,
+            formatter: function() {
+              return '$'+Highcharts.numberFormat(this.y, 0)
+            },
+            verticalAlign: 'top',
+            y: -25,
+            style: {
+                fontWeight: 'bold',
+                color: 'white',
+            },
+        },
+
+        this.chartOptions.series = res.data.series
+        this.ModalChartHeader = index.toUpperCase()
+
+        this.chartShow = true
+      })
+
+    },
+    getInvalidClass(variable) {
+        return {
+            'p-invalid': !this.form[variable] || this.errors[variable],
+        };
+    },
   },
   computed: {
-
+    footerText() {
+          return Object.keys(this.usersSections[this.index]).length > 1 
+              ? 'Total Final' 
+              : 'Total';
+      },
   },
   watch: {
     flash: {

@@ -1,0 +1,23 @@
+{
+  "node_modules/primevue/resources/themes/lara-dark-purple/fonts/Inter-italic.var.woff2": {
+    "file": "assets/Inter-italic.var-DhD-tpjY.woff2",
+    "src": "node_modules/primevue/resources/themes/lara-dark-purple/fonts/Inter-italic.var.woff2"
+  },
+  "node_modules/primevue/resources/themes/lara-dark-purple/fonts/Inter-roman.var.woff2": {
+    "file": "assets/Inter-roman.var-C-r5W2Hj.woff2",
+    "src": "node_modules/primevue/resources/themes/lara-dark-purple/fonts/Inter-roman.var.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C1bv4kfg.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-BXmPlCcL.css"
+    ],
+    "assets": [
+      "assets/Inter-roman.var-C-r5W2Hj.woff2",
+      "assets/Inter-italic.var-DhD-tpjY.woff2"
+    ]
+  }
+}
