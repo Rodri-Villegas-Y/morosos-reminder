@@ -307,7 +307,7 @@ export default {
             formatter: function () {
                 let header = (this.points.length > 1) ? 
                               '<p style="text-align: center; color:white; font-size:14px;"><b>Dia '+this.x+'</b></h5><table>' :
-                              '<p style="text-align: center; color:white; font-size:14px;"><b>'+moment(this.x).format('DD MMM YYYY')+'</b></h5><table>'
+                              '<p style="text-align: center; color:white; font-size:14px;"><b>'+this.x+'</b></h5><table>'
                 let body   = ''
                 let footer = '</table>'
 
